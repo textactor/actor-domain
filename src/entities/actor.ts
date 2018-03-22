@@ -9,12 +9,12 @@ export enum ActorType {
 
 export type Actor = {
     id: string
-    name: string
-    lang: string
-    country: string
-    slug: string
+    name?: string
+    lang?: string
+    country?: string
+    slug?: string
 
-    names: string[]
+    names?: string[]
 
     abbr?: string
     shortName?: string

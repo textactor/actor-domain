@@ -105,4 +105,17 @@ export class ActorHelper {
     public static hash(name: string, lang: string, country: string) {
         return md5([lang.trim().toLowerCase(), country.trim().toLowerCase(), name.trim()].join('_'));
     }
+
+    public static createNameId(name: string, lang: string, country: string) {
+        lang = lang.trim().toLowerCase();
+        country = country.trim().toLowerCase();
+
+        name = name.trim();
+        name = ActorHelper.normalizeName(name, lang);
+        name = NameHelper.atonic(name);
+
+        const hash = md5(name);
+
+        return [lang, country, hash].join();
+    }
 }
