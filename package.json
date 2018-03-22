@@ -36,8 +36,13 @@
   "homepage": "https://github.com/textactor/actor-domain#readme",
   "devDependencies": {
     "@types/node": "latest",
+    "@types/shortid": "^0.0.29",
     "ava": "^0.23.0",
     "rimraf": "^2.6.2",
     "typescript": "latest"
+  },
+  "dependencies": {
+    "@textactor/domain": "^0.1.0",
+    "shortid": "^2.2.8"
   }
 }

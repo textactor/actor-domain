@@ -44,9 +44,22 @@
   dependencies:
     arrify "^1.0.1"
 
+"@textactor/domain@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@textactor/domain/-/domain-0.1.0.tgz#fc33cf3a5ca105aca95d0a0eb2c1fcc447659afa"
+  dependencies:
+    atonic "^1.0.4"
+    root-name "^0.1.0"
+    slugify "^1.2.9"
+    standard-text "^0.1.1"
+
 "@types/node@latest":
   version "9.4.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.4.7.tgz#57d81cd98719df2c9de118f2d5f3b1120dcd7275"
+
+"@types/shortid@^0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/shortid/-/shortid-0.0.29.tgz#8093ee0416a6e2bf2aa6338109114b3fbffa0e9b"
 
 abbrev@1:
   version "1.1.1"
@@ -174,6 +187,10 @@ async-each@^1.0.0:
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
+
+atonic@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/atonic/-/atonic-1.0.4.tgz#7db3f216070abb68660f18122a380903e09d27c7"
 
 auto-bind@^1.1.0:
   version "1.2.0"
@@ -2380,6 +2397,10 @@ rimraf@2, rimraf@^2.5.1, rimraf@^2.6.1, rimraf@^2.6.2:
   dependencies:
     glob "^7.0.5"
 
+root-name@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/root-name/-/root-name-0.1.0.tgz#ecbcce8a65c134d7b39c18e4511f1ed7b80f8018"
+
 safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
@@ -2412,6 +2433,10 @@ shebang-regex@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/shebang-regex/-/shebang-regex-1.0.0.tgz#da42f49740c0b42db2ca9728571cb190c98efea3"
 
+shortid@^2.2.8:
+  version "2.2.8"
+  resolved "https://registry.yarnpkg.com/shortid/-/shortid-2.2.8.tgz#033b117d6a2e975804f6f0969dbe7d3d0b355131"
+
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
@@ -2429,6 +2454,10 @@ slice-ansi@^1.0.0:
 slide@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
+
+slugify@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/slugify/-/slugify-1.2.9.tgz#c3d518f5136b3c69345d5d0bbbcde7412b5694aa"
 
 sntp@1.x.x:
   version "1.0.9"
@@ -2495,6 +2524,10 @@ sshpk@^1.7.0:
 stack-utils@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-1.0.1.tgz#d4f33ab54e8e38778b0ca5cfd3b3afb12db68620"
+
+standard-text@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/standard-text/-/standard-text-0.1.1.tgz#e5a4fbbdd6a7fed7df175f5ea0220c49c573a188"
 
 string-width@^1.0.1, string-width@^1.0.2:
   version "1.0.2"
