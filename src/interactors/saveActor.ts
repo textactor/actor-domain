@@ -57,12 +57,15 @@ export class SaveActor extends UseCase<Actor, Actor, void> {
         const addedNames = await this.nameRepository.addNames(actorNames);
         const newNames = uniq(actor.names.concat(addedNames.map(item => item.name)));
 
-        debug(`adding new actor names: ${newNames}`);
+        debug(`Setting actor names: ${newNames}`);
 
         return this.actorRepository.update({ item: { id: actor.id, names: newNames } });
     }
 
     private async updateActor(actor: Actor): Promise<Actor> {
+
+        debug(`Updating actor: ${actor.slug}`);
+
         const lang = actor.lang;
         const country = actor.country;
         const existingActor = await this.actorRepository.getById(actor.id);
@@ -96,8 +99,6 @@ export class SaveActor extends UseCase<Actor, Actor, void> {
 
             newNames = addedNames.map(item => item.name);
 
-            debug(`adding new actor names: ${newNames}`);
-
             actor.names = uniq(existingActor.names.concat(newNames));
         } else {
             delete actor.names;
@@ -107,7 +108,7 @@ export class SaveActor extends UseCase<Actor, Actor, void> {
 
         Object.keys(actor).forEach(key => {
             if (['id', 'createdAt'].indexOf(key) < 0
-                && [undefined, null, ''].indexOf((<any>actor)[key]) > -1
+                && [undefined, null, ''].indexOf((<any>actor)[key]) < 0
                 && (<any>actor)[key] !== (<any>existingActor)[key]) {
                 (<any>updateData.item)[key] = (<any>actor)[key];
             }
