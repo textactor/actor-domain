@@ -1,4 +1,4 @@
 
 export { Actor, ActorType } from './actor';
-export { ActorHelper } from './actorHelper';
+export { ActorHelper, CreatingActorData } from './actorHelper';
 export { ActorName } from './actorName';

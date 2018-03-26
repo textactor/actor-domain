@@ -1,6 +1,5 @@
 import { Actor, ActorType } from "./actor";
 import { NameHelper, md5, uniq } from '@textactor/domain';
-import * as ShortId from 'shortid';
 
 export type CreatingActorData = {
     lang: string
@@ -18,11 +17,11 @@ export type CreatingActorData = {
 export class ActorHelper {
 
     static create(creatingData: CreatingActorData): Actor {
-        const id = ShortId.generate();
         const lang = creatingData.lang.trim().toLowerCase();
         const country = creatingData.country.trim().toLowerCase();
         const name = NameHelper.standardText(creatingData.name.trim(), lang);
-        const slug = NameHelper.slug(name.toLowerCase());
+        const id = ActorHelper.createNameId(name, lang, country);
+        const slug = NameHelper.slug(creatingData.abbr && creatingData.abbr.toLowerCase() || name.toLowerCase());
 
         let names = creatingData.names.map(item => NameHelper.standardText(item.trim(), lang));
         names.push(slug);
@@ -116,6 +115,6 @@ export class ActorHelper {
 
         const hash = md5(name);
 
-        return [lang, country, hash].join();
+        return [lang, country, hash].join('');
     }
 }

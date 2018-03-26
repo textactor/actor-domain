@@ -57,4 +57,13 @@ export class MemoryActorRepository implements IActorRepository {
 
         return Promise.resolve(item);
     }
+
+    all(): Promise<Actor[]> {
+        const array: Actor[] = []
+        for (let item of this.db.values()) {
+            array.push(item);
+        }
+
+        return Promise.resolve(array);
+    }
 }
