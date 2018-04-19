@@ -21,10 +21,11 @@ export class ActorHelper {
         const country = creatingData.country.trim().toLowerCase();
         const name = NameHelper.standardText(creatingData.name.trim(), lang);
         const id = ActorHelper.createNameId(name, lang, country);
-        const slug = NameHelper.slug(creatingData.abbr && creatingData.abbr.toLowerCase() || name.toLowerCase());
+        const slug = NameHelper.slug(name.toLowerCase());
 
-        let names = creatingData.names.map(item => NameHelper.standardText(item.trim(), lang));
-        names.push(slug);
+        let names = creatingData.names.filter(name => ActorHelper.isValidName(name, lang))
+            .map(item => NameHelper.standardText(item.trim(), lang));
+        // names.push(slug);
         names.unshift(name);
         names = uniq(names.filter(item => ActorHelper.isValidName(item, lang)));
 
@@ -46,7 +47,7 @@ export class ActorHelper {
         }
 
         if (!ActorHelper.isValidName(actor.slug, lang)) {
-            throw new Error(`Actor slug is invalid: ${actor.slug}`);
+            throw new Error(`Actor slug is invalid: ${actor.name}`);
         }
 
         if (creatingData.abbr) {
@@ -75,6 +76,9 @@ export class ActorHelper {
     }
 
     public static isValidName(name: string, lang: string) {
+        if (!name) {
+            return false;
+        }
         const normalName = ActorHelper.normalizeName(name, lang);
         return name.length === name.trim().length && name.length > 1 && name.length <= 200
             && normalName.length > 1 && normalName.length <= 200;
