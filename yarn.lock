@@ -44,7 +44,7 @@
   dependencies:
     arrify "^1.0.1"
 
-"@textactor/domain@^0.1.2":
+"@textactor/domain@^0.1.4":
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/@textactor/domain/-/domain-0.1.4.tgz#6dc901d7442ed83e64866578a729cf386e288471"
   dependencies:

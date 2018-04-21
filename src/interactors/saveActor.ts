@@ -2,10 +2,11 @@
 const debug = require('debug')('textactor:actor-domain');
 
 import { Actor, ActorHelper } from "../entities";
-import { UseCase, uniq, RepUpdateData, seriesPromise } from "@textactor/domain";
+import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
 import { IActorRepository } from "./actorRepository";
 import { IActorNameRepository } from "./actorNameRepository";
 import { KnownActorData } from "../entities/actorHelper";
+import { uniqProp } from "../utils";
 
 export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
@@ -46,13 +47,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
         debug(`Creating new actor: ${actor.name}`);
         const createdActor = await this.actorRepository.create(actor);
 
-        names.unshift(actor.name);
-        names = uniq(names);
-
-        const actorNames = ActorHelper.createActorNames(names, actor.lang, actor.country, actor.id);
-        await seriesPromise(actorNames, name => this.nameRepository.create(name));
-
-        return createdActor;
+        return this.updateActorNames(createdActor, names);
     }
 
     private async updateActor(actor: Actor, names: string[]): Promise<Actor> {
@@ -91,9 +86,11 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
     }
 
     private updateActorNames(actor: Actor, names: string[]): Promise<Actor> {
+        names.unshift(actor.name);
+        names = uniq(names);
 
-        const actorNames = ActorHelper.createActorNames(names, actor.lang, actor.country, actor.id);
-
+        let actorNames = ActorHelper.createActorNames(names, actor.lang, actor.country, actor.id);
+        actorNames = uniqProp(actorNames, 'id');
         return this.nameRepository.addNames(actorNames).then(() => actor);
     }
 }
