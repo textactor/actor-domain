@@ -1,76 +1,49 @@
 import { Actor, ActorType } from "./actor";
-import { NameHelper, md5, uniq } from '@textactor/domain';
+import { NameHelper, md5 } from '@textactor/domain';
+import { generate as generateNewId } from 'shortid';
+import { ActorName } from ".";
 
-export type CreatingActorData = {
+export type KnownActorData = {
     lang: string
     country: string
     name: string
-    names: string[]
-
-    type?: ActorType
-
-    shortName?: string
     abbr?: string
-    wikiDataId?: string
+    type?: ActorType
+    wikiEntity?: { wikiDataId: string, name: string, wikiPageTitle?: string, countryCode?: string }
+    names: { name: string, abbr?: string }[]
+    context?: string
 }
 
 export class ActorHelper {
 
-    static create(creatingData: CreatingActorData): Actor {
-        const lang = creatingData.lang.trim().toLowerCase();
-        const country = creatingData.country.trim().toLowerCase();
-        const name = NameHelper.standardText(creatingData.name.trim(), lang);
-        const id = ActorHelper.createNameId(name, lang, country);
-        const slug = NameHelper.slug(name.toLowerCase());
+    static newId(): string {
+        return generateNewId();
+    }
+    static build(knownData: KnownActorData): Actor {
+        const id = ActorHelper.newId();
+        const lang = knownData.lang.trim().toLowerCase();
+        const country = knownData.country.trim().toLowerCase();
+        let abbr = knownData.abbr;
+        const name = NameHelper.standardText(knownData.name.trim(), lang);
 
-        let names = creatingData.names.filter(name => ActorHelper.isValidName(name, lang))
-            .map(item => NameHelper.standardText(item.trim(), lang));
-        // names.push(slug);
-        names.unshift(name);
-        names = uniq(names.filter(item => ActorHelper.isValidName(item, lang)));
+        if (!abbr && !NameHelper.isAbbr(name)) {
+            const abbrs = knownData.names.map(item => item.abbr || NameHelper.isAbbr(item.name) && item.name || null)
+                .filter(name => ActorHelper.isValidName(name, lang));
+            if (abbrs.length) {
+                abbr = NameHelper.findAbbr(abbrs);
+            }
+        }
 
         const actor: Actor = {
             id,
             lang,
             country,
+            type: knownData.type,
+            wikiDataId: knownData.wikiEntity && knownData.wikiEntity.wikiDataId,
             name,
-            slug,
-            names,
+            abbr,
+            context: knownData.context,
         };
-
-        if (!ActorHelper.isValidName(actor.name, lang)) {
-            throw new Error(`Actor name is invalid: ${actor.name}`);
-        }
-
-        if (names.length === 0) {
-            throw new Error(`Actor names is invalid: ${actor.names}`);
-        }
-
-        if (!ActorHelper.isValidName(actor.slug, lang)) {
-            throw new Error(`Actor slug is invalid: ${actor.name}`);
-        }
-
-        if (creatingData.abbr) {
-            actor.abbr = creatingData.abbr;
-            if (!ActorHelper.isValidName(actor.abbr, lang)) {
-                throw new Error(`Actor abbr is invalid: ${actor.abbr}`);
-            }
-        }
-        if (creatingData.shortName) {
-            actor.shortName = creatingData.shortName;
-            if (!ActorHelper.isValidName(actor.shortName, lang)) {
-                throw new Error(`Actor shortName is invalid: ${actor.shortName}`);
-            }
-        }
-        if (creatingData.type) {
-            actor.type = creatingData.type;
-        }
-        if (creatingData.wikiDataId) {
-            actor.wikiDataId = creatingData.wikiDataId;
-            if (!/^Q\d+$/.test(actor.wikiDataId)) {
-                throw new Error(`wikiDataId is invalid: ${actor.wikiDataId}`);
-            }
-        }
 
         return actor;
     }
@@ -79,46 +52,30 @@ export class ActorHelper {
         if (!name) {
             return false;
         }
-        const normalName = ActorHelper.normalizeName(name, lang);
+        const normalName = NameHelper.normalizeName(name, lang);
         return name.length === name.trim().length && name.length > 1 && name.length <= 200
             && normalName.length > 1 && normalName.length <= 200;
     }
 
-    public static normalizeName(name: string, lang: string) {
-        name = name.trim().replace(/\s+/g, ' ').trim();
-        lang = lang.trim().toLowerCase();
-        name = NameHelper.removeSymbols(name);
-        name = NameHelper.standardText(name, lang);
+    public static nameHash(name: string, lang: string) {
+        name = NameHelper.formatUniqueName(name, lang);
 
-        if (NameHelper.isAbbr(name)) {
-            return name;
-        }
-
-        return name.toLowerCase();
-    }
-
-    public static nameHash(name: string, lang: string, country: string) {
-        name = name.trim();
-        name = ActorHelper.normalizeName(name, lang);
-        name = NameHelper.atonic(name);
-
-        return ActorHelper.hash(name, lang, country);
-    }
-
-    public static hash(name: string, lang: string, country: string) {
-        return md5([lang.trim().toLowerCase(), country.trim().toLowerCase(), name.trim()].join('_'));
+        return md5(name);
     }
 
     public static createNameId(name: string, lang: string, country: string) {
         lang = lang.trim().toLowerCase();
         country = country.trim().toLowerCase();
 
-        name = name.trim();
-        name = ActorHelper.normalizeName(name, lang);
-        name = NameHelper.atonic(name);
-
-        const hash = md5(name);
+        const hash = ActorHelper.nameHash(name, lang);
 
         return [lang, country, hash].join('');
+    }
+
+    static createActorNames(names: string[], lang: string, country: string, actorId: string): ActorName[] {
+        const actorNames = names.filter(name => ActorHelper.isValidName(name, lang))
+            .map(name => ({ name, lang, country, actorId, id: ActorHelper.createNameId(name, lang, country) }));
+
+        return actorNames;
     }
 }

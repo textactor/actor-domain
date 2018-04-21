@@ -1,29 +1,28 @@
 
 const debug = require('debug')('textactor:actor-domain');
 
-import { Actor, ActorHelper, ActorName } from "../entities";
-import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
+import { Actor, ActorHelper } from "../entities";
+import { UseCase, uniq, RepUpdateData, seriesPromise } from "@textactor/domain";
 import { IActorRepository } from "./actorRepository";
 import { IActorNameRepository } from "./actorNameRepository";
+import { KnownActorData } from "../entities/actorHelper";
 
-export class SaveActor extends UseCase<Actor, Actor, void> {
+export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
     constructor(private actorRepository: IActorRepository, private nameRepository: IActorNameRepository) {
         super();
     }
 
-    protected async innerExecute(actor: Actor): Promise<Actor> {
+    protected async innerExecute(knownData: KnownActorData): Promise<Actor> {
 
-        actor = { ...actor };
+        const actor = ActorHelper.build(knownData);
 
-        const lang = actor.lang = actor.lang.trim().toLowerCase();
-        const country = actor.country = actor.country.trim().toLowerCase();
+        const lang = actor.lang;
+        const country = actor.country;
+        let names = knownData.names.map(item => item.name)
+            .filter(item => ActorHelper.isValidName(item, lang));
 
-        const names = uniq(actor.names.filter(item => ActorHelper.isValidName(item, lang)));
-
-        if (names.length === 0) {
-            return Promise.reject(new Error(`Invalid actor names: ${names}`));
-        }
+        names.unshift(actor.name);
 
         const nameIds = uniq(names.map(item => ActorHelper.createNameId(item, lang, country)));
 
@@ -32,43 +31,37 @@ export class SaveActor extends UseCase<Actor, Actor, void> {
 
 
         if (actorIds.length > 1) {
-            return Promise.reject(new Error(`Found more than 1 existing actor with a provited name`));
+            return Promise.reject(new Error(`Found more than 1 existing actor: ${JSON.stringify(knownData)}`));
         }
-
-        actor.names = names;
 
         if (actorIds.length === 1) {
             actor.id = actorIds[0];
-            return this.updateActor(actor);
+            return this.updateActor(actor, names);
         }
 
-        actor.names = [actor.name];
-
-        await this.actorRepository.create(actor);
-
-        const actorNames: ActorName[] = names.map(name => ({
-            name,
-            lang,
-            country,
-            actorId: actor.id,
-            id: ActorHelper.createNameId(name, lang, country),
-        }));
-
-        const addedNames = await this.nameRepository.addNames(actorNames);
-        const newNames = uniq(actor.names.concat(addedNames.map(item => item.name)));
-
-        debug(`Setting actor names: ${newNames}`);
-
-        return this.actorRepository.update({ item: { id: actor.id, names: newNames } });
+        return this.createActor(actor, names);
     }
 
-    private async updateActor(actor: Actor): Promise<Actor> {
+    private async createActor(actor: Actor, names: string[]): Promise<Actor> {
+        debug(`Creating new actor: ${actor.name}`);
+        const createdActor = await this.actorRepository.create(actor);
 
-        debug(`Updating actor: ${actor.slug}`);
+        names.unshift(actor.name);
+        names = uniq(names);
+
+        const actorNames = ActorHelper.createActorNames(names, actor.lang, actor.country, actor.id);
+        await seriesPromise(actorNames, name => this.nameRepository.create(name));
+
+        return createdActor;
+    }
+
+    private async updateActor(actor: Actor, names: string[]): Promise<Actor> {
+
+        debug(`Updating actor: ${actor.name}`);
 
         const lang = actor.lang;
         const country = actor.country;
-        const existingActor = await this.actorRepository.getById(actor.id);
+        let existingActor = await this.actorRepository.getById(actor.id);
 
         if (!existingActor) {
             return Promise.reject(new Error(`Not found Actor id==${actor.id}`));
@@ -76,32 +69,6 @@ export class SaveActor extends UseCase<Actor, Actor, void> {
 
         if (existingActor.lang !== lang || existingActor.country !== country) {
             return Promise.reject(new Error(`Invalid Actor id==${actor.id} locale: ${lang}_${country}`));
-        }
-
-        let newNames: string[] = [];
-
-        for (let name of actor.names) {
-            if (existingActor.names.indexOf(name) < 0) {
-                newNames.push(name);
-            }
-        }
-
-        if (newNames.length) {
-            const newActorNames: ActorName[] = actor.names.map(name => ({
-                name,
-                lang,
-                country,
-                actorId: actor.id,
-                id: ActorHelper.createNameId(name, lang, country),
-            }));
-
-            const addedNames = await this.nameRepository.addNames(newActorNames);
-
-            newNames = addedNames.map(item => item.name);
-
-            actor.names = uniq(existingActor.names.concat(newNames));
-        } else {
-            delete actor.names;
         }
 
         const updateData: RepUpdateData<Actor> = { item: { id: actor.id } };
@@ -116,9 +83,17 @@ export class SaveActor extends UseCase<Actor, Actor, void> {
 
         if (Object.keys(updateData.item).length < 2) {
             debug(`no updates to actor: ${actor.name}`);
-            return existingActor;
+        } else {
+            existingActor = await this.actorRepository.update(updateData);
         }
 
-        return this.actorRepository.update(updateData);
+        return this.updateActorNames(existingActor, names);
+    }
+
+    private updateActorNames(actor: Actor, names: string[]): Promise<Actor> {
+
+        const actorNames = ActorHelper.createActorNames(names, actor.lang, actor.country, actor.id);
+
+        return this.nameRepository.addNames(actorNames).then(() => actor);
     }
 }

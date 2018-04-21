@@ -12,16 +12,14 @@ export type Actor = {
     name?: string
     lang?: string
     country?: string
-    slug?: string
-
-    names?: string[]
 
     abbr?: string
-    shortName?: string
 
     type?: ActorType
     wikiDataId?: string
 
     createdAt?: number
     updatedAt?: number
+
+    context?: string
 }

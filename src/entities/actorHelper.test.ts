@@ -1,7 +1,7 @@
 
 import test from 'ava';
 import { ActorHelper } from './actorHelper';
-import { ActorType } from '.';
+// import { ActorType } from '.';
 
 test('#isValidName', t => {
     t.true(ActorHelper.isValidName('Name', 'en'));
@@ -11,10 +11,10 @@ test('#isValidName', t => {
     t.false(ActorHelper.isValidName('n #', 'en'));
 });
 
-test('#create', t => {
-    t.throws(() => ActorHelper.create({ name: 'A', names: ['B'], lang: 'en', country: 'us' }), /Actor name is invalid/);
-    t.throws(() => ActorHelper.create({ name: 'A ?', names: ['Bar'], lang: 'en', country: 'us' }), /Actor name is invalid/);
-    const actor = ActorHelper.create({ name: 'Chisinau', names: [], type: ActorType.PLACE, country: 'us', lang: 'en' });
+// test('#create', t => {
+//     t.throws(() => ActorHelper.build({ name: 'A', names: ['B'], lang: 'en', country: 'us' }), /Actor name is invalid/);
+//     t.throws(() => ActorHelper.create({ name: 'A ?', names: ['Bar'], lang: 'en', country: 'us' }), /Actor name is invalid/);
+//     const actor = ActorHelper.create({ name: 'Chisinau', names: [], type: ActorType.PLACE, country: 'us', lang: 'en' });
 
-    t.is(typeof actor.id, 'string');
-});
+//     t.is(typeof actor.id, 'string');
+// });

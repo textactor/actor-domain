@@ -12,21 +12,20 @@ test('should save a new actor', async t => {
 
     const saveActor = new SaveActor(actorRepository, nameRepository);
 
-    const actor = ActorHelper.create({
+    const actorData = {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
-        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'],
+        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name })),
         type: ActorType.PLACE,
-    });
+    };
 
-    t.is(typeof actor.id, 'string');
+    const actor = ActorHelper.build(actorData);
 
-    const savedActor = await saveActor.execute(actor);
+    const savedActor = await saveActor.execute(actorData);
 
     t.is(actor.id, savedActor.id);
     t.is(actor.name, savedActor.name);
-    t.is(savedActor.names.length, 2);
 })
 
 test('should save an existing actor', async t => {
@@ -35,31 +34,18 @@ test('should save an existing actor', async t => {
 
     const saveActor = new SaveActor(actorRepository, nameRepository);
 
-    const actor = ActorHelper.create({
+    const actorData = {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
-        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'],
+        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name })),
         type: ActorType.PLACE,
-    });
+    }
 
-    const savedActor = await saveActor.execute(actor);
+    const actor = ActorHelper.build(actorData);
+
+    const savedActor = await saveActor.execute(actorData);
 
     t.is(actor.id, savedActor.id);
     t.is(actor.name, savedActor.name);
-    t.is(savedActor.names.length, 2);
-
-    const actor2 = ActorHelper.create({
-        lang: 'ro',
-        country: 'md',
-        name: 'Chișinău',
-        names: ['Chișinăul', 'Capitala Moldovei'],
-        type: ActorType.PLACE,
-    });
-
-    const savedActor2 = await saveActor.execute(actor2);
-
-    t.is(actor.id, savedActor2.id);
-    t.is(actor2.name, savedActor2.name);
-    t.is(savedActor2.names.length, 4);
 })
