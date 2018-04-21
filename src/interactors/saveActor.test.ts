@@ -24,7 +24,7 @@ test('should save a new actor', async t => {
 
     const savedActor = await saveActor.execute(actorData);
 
-    t.is(actor.id, savedActor.id);
+    t.not(actor.id, savedActor.id);
     t.is(actor.name, savedActor.name);
 })
 
@@ -46,6 +46,6 @@ test('should save an existing actor', async t => {
 
     const savedActor = await saveActor.execute(actorData);
 
-    t.is(actor.id, savedActor.id);
+    t.not(actor.id, savedActor.id);
     t.is(actor.name, savedActor.name);
 })

@@ -7,7 +7,7 @@ export interface IActorNameWriteRepository extends IWriteRepository<string, Acto
 }
 
 export interface IActorNameReadRepository extends IReadRepository<string, ActorName> {
-
+    getNamesByActorId(actorId: string): Promise<ActorName[]>
 }
 
 export interface IActorNameRepository extends IActorNameReadRepository, IActorNameWriteRepository {

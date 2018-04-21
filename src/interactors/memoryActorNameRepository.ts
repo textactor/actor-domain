@@ -5,7 +5,18 @@ import { ActorName } from '../entities';
 
 
 export class MemoryActorNameRepository implements IActorNameRepository {
+
     private db: Map<string, ActorName> = new Map()
+
+    getNamesByActorId(actorId: string): Promise<ActorName[]> {
+        const list: ActorName[] = [];
+        for (let item of this.db.values()) {
+            if (item.actorId === actorId) {
+                list.push(item);
+            }
+        }
+        return Promise.resolve(list);
+    }
 
     addNames(names: ActorName[]): Promise<ActorName[]> {
         const list: ActorName[] = [];
