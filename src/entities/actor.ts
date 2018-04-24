@@ -22,4 +22,5 @@ export type Actor = {
     updatedAt?: number
 
     context?: string
+    description?: string
 }

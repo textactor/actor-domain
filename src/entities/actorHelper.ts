@@ -9,7 +9,13 @@ export type KnownActorData = {
     name: string
     abbr?: string
     type?: ActorType
-    wikiEntity?: { wikiDataId: string, name: string, wikiPageTitle?: string, countryCode?: string }
+    wikiEntity?: {
+        wikiDataId: string,
+        name: string,
+        wikiPageTitle?: string,
+        countryCode?: string,
+        description?: string,
+    }
     names: { name: string, abbr?: string }[]
     context?: string
 }
@@ -44,6 +50,10 @@ export class ActorHelper {
             abbr,
             context: knownData.context,
         };
+
+        if (knownData.wikiEntity && knownData.wikiEntity.description) {
+            actor.description = knownData.wikiEntity.description;
+        }
 
         return actor;
     }

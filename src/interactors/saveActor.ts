@@ -25,6 +25,8 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
         names.unshift(actor.name);
 
+        names = uniq(names);
+
         const nameIds = uniq(names.map(item => ActorHelper.createNameId(item, lang, country)));
 
         const dbActorNames = await this.nameRepository.getByIds(nameIds);
