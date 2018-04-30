@@ -17,10 +17,10 @@ export type Actor = {
 
     type?: ActorType
     wikiDataId?: string
+    wikiPageTitle?: string
 
     createdAt?: number
     updatedAt?: number
 
-    context?: string
     description?: string
 }

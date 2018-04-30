@@ -45,14 +45,23 @@ export class ActorHelper {
             lang,
             country,
             type: knownData.type,
-            wikiDataId: knownData.wikiEntity && knownData.wikiEntity.wikiDataId,
             name,
             abbr,
-            context: knownData.context,
         };
-
-        if (knownData.wikiEntity && knownData.wikiEntity.description) {
-            actor.description = knownData.wikiEntity.description;
+        if (knownData.wikiEntity) {
+            if (knownData.wikiEntity.description) {
+                actor.description = knownData.wikiEntity.description;
+            }
+            actor.wikiDataId = knownData.wikiEntity.wikiDataId;
+            actor.wikiPageTitle = knownData.wikiEntity.wikiPageTitle;
+            if (actor.wikiPageTitle) {
+                if (actor.wikiPageTitle === actor.name) {
+                    delete actor.wikiPageTitle;
+                } else if (actor.name.toUpperCase() === actor.wikiPageTitle.toUpperCase()) {
+                    actor.name = actor.wikiPageTitle;
+                    delete actor.wikiPageTitle;
+                }
+            }
         }
 
         return actor;
