@@ -30,7 +30,7 @@ export class ActorHelper {
         const lang = knownData.lang.trim().toLowerCase();
         const country = knownData.country.trim().toLowerCase();
         let abbr = knownData.abbr;
-        const name = NameHelper.standardText(knownData.name.trim(), lang);
+        const name = NameHelper.standardText(buildActorName(knownData.name, knownData.wikiEntity && knownData.wikiEntity.wikiPageTitle), lang);
 
         if (!abbr && !NameHelper.isAbbr(name)) {
             const abbrs = knownData.names.map(item => item.abbr || NameHelper.isAbbr(item.name) && item.name || null)
@@ -54,13 +54,9 @@ export class ActorHelper {
             }
             actor.wikiDataId = knownData.wikiEntity.wikiDataId;
             actor.wikiPageTitle = knownData.wikiEntity.wikiPageTitle;
-            if (actor.wikiPageTitle) {
-                if (actor.wikiPageTitle === actor.name) {
-                    delete actor.wikiPageTitle;
-                } else if (actor.name.toUpperCase() === actor.wikiPageTitle.toUpperCase()) {
-                    actor.name = actor.wikiPageTitle;
-                    delete actor.wikiPageTitle;
-                }
+
+            if (actor.wikiPageTitle === actor.name) {
+                delete actor.wikiPageTitle;
             }
         }
 
@@ -97,4 +93,24 @@ export class ActorHelper {
 
         return actorNames;
     }
+}
+
+function buildActorName(name: string, wikiPageTitle?: string): string {
+    if (wikiPageTitle) {
+        if (name.length >= wikiPageTitle.length) {
+            name = wikiPageTitle;
+        }
+    }
+
+    return formatShortName(name);
+}
+
+function formatShortName(name: string) {
+    if (~name.indexOf(')')) {
+        const shortName = name.substr(0, name.indexOf('(')).trim();
+        if (NameHelper.countWords(shortName) > 1) {
+            return shortName;
+        }
+    }
+    return name;
 }
