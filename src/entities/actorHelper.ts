@@ -13,7 +13,7 @@ export type KnownActorData = {
         wikiDataId: string,
         name: string,
         wikiPageTitle?: string,
-        countryCode?: string,
+        // countryCode?: string,
         description?: string,
     }
     names: { name: string, abbr?: string }[]

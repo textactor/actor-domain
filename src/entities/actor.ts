@@ -5,6 +5,7 @@ export enum ActorType {
     PERSON = 'PERSON',
     PLACE = 'PLACE',
     PRODUCT = 'PRODUCT',
+    WORK = 'WORK',
 }
 
 export type Actor = {
