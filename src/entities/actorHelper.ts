@@ -51,6 +51,9 @@ export class ActorHelper {
         if (knownData.wikiEntity) {
             if (knownData.wikiEntity.description) {
                 actor.description = knownData.wikiEntity.description;
+                if (actor.description.length > 100) {
+                    actor.description = actor.description.substr(0, 100).trim();
+                }
             }
             actor.wikiDataId = knownData.wikiEntity.wikiDataId;
             actor.wikiPageTitle = knownData.wikiEntity.wikiPageTitle;
