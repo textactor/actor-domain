@@ -1,7 +1,7 @@
 #!/bin/bash
 
-yarn remove @textactor/domain
+yarn unlink @textactor/domain
 
-yarn link @textactor/domain
+yarn add @textactor/domain
 
 yarn test
