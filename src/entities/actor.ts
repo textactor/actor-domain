@@ -10,18 +10,19 @@ export enum ActorType {
 
 export type Actor = {
     id: string
-    name?: string
-    lang?: string
-    country?: string
+    name: string
+    lang: string
+    country: string
 
     abbr?: string
 
     type?: ActorType
-    wikiDataId?: string
+    wikiDataId: string
     wikiPageTitle?: string
 
     createdAt?: number
     updatedAt?: number
 
     description?: string
+    countLinks: number
 }

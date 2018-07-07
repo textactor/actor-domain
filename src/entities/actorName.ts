@@ -5,5 +5,11 @@ export type ActorName = {
     lang: string
     country: string
     actorId: string
+    type: ActorNameType
     createdAt?: number
+}
+
+export enum ActorNameType {
+    WIKI = 'WIKI',
+    SAME = 'SAME',
 }

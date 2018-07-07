@@ -1,6 +1,7 @@
 
 import test from 'ava';
 import { ActorHelper } from './actorHelper';
+import { ActorNameType, ActorName } from './actorName';
 // import { ActorType } from '.';
 
 test('#isValidName', t => {
@@ -9,6 +10,22 @@ test('#isValidName', t => {
     t.true(ActorHelper.isValidName('Name 2', 'en'));
     t.false(ActorHelper.isValidName('n', 'en'));
     t.false(ActorHelper.isValidName('n #', 'en'));
+});
+
+test('#sortActorNames', t => {
+    const defaultName: ActorName = { type: ActorNameType.WIKI, name: '', id: '', actorId: '', country: '', lang: '' };
+
+    let result = ActorHelper.sortActorNames([
+        { ...defaultName, type: ActorNameType.WIKI },
+        { ...defaultName, type: ActorNameType.SAME },
+        { ...defaultName, type: ActorNameType.WIKI },
+        { ...defaultName, type: ActorNameType.SAME },
+    ]);
+
+    t.is(result[0].type, ActorNameType.WIKI);
+    t.is(result[1].type, ActorNameType.WIKI);
+    t.is(result[2].type, ActorNameType.SAME);
+    t.is(result[3].type, ActorNameType.SAME);
 });
 
 // test('#create', t => {

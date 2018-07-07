@@ -1,7 +1,7 @@
 import { Actor, ActorType } from "./actor";
-import { NameHelper, md5 } from '@textactor/domain';
+import { NameHelper, md5, uniqByProp } from '@textactor/domain';
 import { generate as generateNewId } from 'shortid';
-import { ActorName } from ".";
+import { ActorNameType, ActorName } from "./actorName";
 
 export type KnownActorData = {
     lang: string
@@ -9,15 +9,20 @@ export type KnownActorData = {
     name: string
     abbr?: string
     type?: ActorType
-    wikiEntity?: {
-        wikiDataId: string,
-        name: string,
-        wikiPageTitle?: string,
-        // countryCode?: string,
-        description?: string,
+    wikiEntity: {
+        wikiDataId: string
+        name: string
+        wikiPageTitle: string
+        description?: string
+        countLinks: number
     }
-    names: { name: string, abbr?: string }[]
+    names: KnownActorName[]
     context?: string
+}
+
+export type KnownActorName = {
+    name: string
+    type: ActorNameType
 }
 
 export class ActorHelper {
@@ -30,13 +35,13 @@ export class ActorHelper {
         const lang = knownData.lang.trim().toLowerCase();
         const country = knownData.country.trim().toLowerCase();
         let abbr = knownData.abbr;
-        const name = knownData.name || knownData.wikiEntity && knownData.wikiEntity.wikiPageTitle;
+        const name = knownData.name;
 
         if (!abbr && !NameHelper.isAbbr(name)) {
-            const abbrs = knownData.names.map(item => item.abbr || NameHelper.isAbbr(item.name) && item.name || null)
-                .filter(name => ActorHelper.isValidName(name, lang));
+            const abbrs = knownData.names.map(item => item.name)
+                .filter(name => NameHelper.isAbbr(name) && ActorHelper.isValidName(name, lang));
             if (abbrs.length) {
-                abbr = NameHelper.findAbbr(abbrs);
+                abbr = NameHelper.findAbbr(abbrs) || undefined;
             }
         }
 
@@ -47,6 +52,9 @@ export class ActorHelper {
             type: knownData.type,
             name,
             abbr,
+            wikiDataId: knownData.wikiEntity.wikiDataId,
+            wikiPageTitle: knownData.wikiEntity.wikiPageTitle,
+            countLinks: knownData.wikiEntity.countLinks,
         };
         if (knownData.wikiEntity) {
             if (knownData.wikiEntity.description) {
@@ -55,8 +63,6 @@ export class ActorHelper {
                     actor.description = actor.description.substr(0, 100).trim();
                 }
             }
-            actor.wikiDataId = knownData.wikiEntity.wikiDataId;
-            actor.wikiPageTitle = knownData.wikiEntity.wikiPageTitle;
 
             if (actor.wikiPageTitle === actor.name) {
                 delete actor.wikiPageTitle;
@@ -90,10 +96,18 @@ export class ActorHelper {
         return [lang, country, hash].join('');
     }
 
-    static createActorNames(names: string[], lang: string, country: string, actorId: string): ActorName[] {
-        const actorNames = names.filter(name => ActorHelper.isValidName(name, lang))
-            .map(name => ({ name, lang, country, actorId, id: ActorHelper.createNameId(name, lang, country) }));
+    static createActorNames(names: KnownActorName[], lang: string, country: string, actorId: string): ActorName[] {
+        const actorNames = names.filter(item => ActorHelper.isValidName(item.name, lang))
+            .map(item => ({ type: item.type, name: item.name, lang, country, actorId, id: ActorHelper.createNameId(item.name, lang, country) }));
 
-        return actorNames;
+        return uniqByProp(actorNames, 'id');
     }
+
+    static sortActorNames(names: ActorName[]) {
+        return names.sort((a, b) => getNameOrder(a) - getNameOrder(b));
+    }
+}
+
+function getNameOrder(name: ActorName) {
+    return name.type === ActorNameType.WIKI ? 0 : 1;
 }

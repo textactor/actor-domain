@@ -1,12 +1,13 @@
 
 const debug = require('debug')('textactor:actor-domain');
 
-import { Actor, ActorHelper } from "../entities";
+import { Actor, ActorHelper, ActorName } from "../entities";
 import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
 import { IActorRepository } from "./actorRepository";
 import { IActorNameRepository } from "./actorNameRepository";
 import { KnownActorData } from "../entities/actorHelper";
-import { uniqProp } from "../utils";
+import { ActorNameType } from "../entities/actorName";
+import { diff as arrayDiff } from 'fast-array-diff';
 
 export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
@@ -23,7 +24,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
         let names = knownData.names.map(item => item.name)
             .filter(item => ActorHelper.isValidName(item, lang));
 
-        names.unshift(actor.name);
+        // names.unshift(actor.name);
 
         names = uniq(names);
 
@@ -37,22 +38,26 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
             return Promise.reject(new Error(`Found more than 1 existing actor: ${JSON.stringify(knownData)}`));
         }
 
+        const actorNames = ActorHelper.createActorNames(knownData.names, lang, country, actor.id);
+
         if (actorIds.length === 1) {
             actor.id = actorIds[0];
-            return this.updateActor(actor, names);
+            return this.updateActor(actor, actorNames);
         }
 
-        return this.createActor(actor, names);
+        return this.createActor(actor, actorNames);
     }
 
-    private async createActor(actor: Actor, names: string[]): Promise<Actor> {
+    private async createActor(actor: Actor, names: ActorName[]): Promise<Actor> {
         debug(`Creating new actor: ${actor.name}`);
         const createdActor = await this.actorRepository.create(actor);
 
-        return this.updateActorNames(createdActor, names);
+        await this.nameRepository.addNames(names);
+
+        return createdActor;
     }
 
-    private async updateActor(actor: Actor, names: string[]): Promise<Actor> {
+    private async updateActor(actor: Actor, names: ActorName[]): Promise<Actor> {
 
         debug(`Updating actor: ${actor.name}`);
 
@@ -68,31 +73,51 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
             return Promise.reject(new Error(`Invalid Actor id==${actor.id} locale: ${lang}_${country}`));
         }
 
-        const updateData: RepUpdateData<Actor> = { item: { id: actor.id } };
+        const updateData: RepUpdateData<string, Actor> = { id: actor.id, set: {} };
 
         Object.keys(actor).forEach(key => {
             if (['id', 'createdAt'].indexOf(key) < 0
                 && [undefined, null, ''].indexOf((<any>actor)[key]) < 0
                 && (<any>actor)[key] !== (<any>existingActor)[key]) {
-                (<any>updateData.item)[key] = (<any>actor)[key];
+                (<any>updateData.set)[key] = (<any>actor)[key];
             }
         });
 
-        if (Object.keys(updateData.item).length < 2) {
+        if (!updateData.set || !Object.keys(updateData.set).length) {
             debug(`no updates to actor: ${actor.name}`);
         } else {
             existingActor = await this.actorRepository.update(updateData);
         }
 
-        return this.updateActorNames(existingActor, names);
+        await this.updateActorNames(names);
+
+        return existingActor;
     }
 
-    private updateActorNames(actor: Actor, names: string[]): Promise<Actor> {
-        names.unshift(actor.name);
-        names = uniq(names);
+    private async updateActorNames(names: ActorName[]) {
+        if (!names.length) {
+            return;
+        }
+        const actorId = names[0].actorId;
 
-        let actorNames = ActorHelper.createActorNames(names, actor.lang, actor.country, actor.id);
-        actorNames = uniqProp(actorNames, 'id');
-        return this.nameRepository.addNames(actorNames).then(() => actor);
+        const newWikiNames = names.filter(item => item.type === ActorNameType.WIKI);
+
+        const dbNames = await this.nameRepository.getNamesByActorId(actorId);
+        const oldWikiNames = dbNames.filter(item => item.type === ActorNameType.WIKI);
+
+        let diff = arrayDiff(oldWikiNames, newWikiNames, (a, b) => a.id === b.id);
+
+        if (diff.removed && diff.removed.length) {
+            debug(`Removing wiki names: ${diff.removed}`);
+            await Promise.all(diff.removed.map(name => this.nameRepository.delete(name.id)));
+        }
+
+        diff = arrayDiff(dbNames, names, (a, b) => a.id === b.id);
+
+        if (diff.added && diff.added.length) {
+            const addNames = ActorHelper.sortActorNames(diff.added);
+            debug(`Adding wiki names: ${addNames}`);
+            await this.nameRepository.addNames(addNames);
+        }
     }
 }

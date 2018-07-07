@@ -31,8 +31,8 @@ export class MemoryActorNameRepository implements IActorNameRepository {
         return Promise.resolve(list);
     }
 
-    getById(id: string): Promise<ActorName> {
-        return Promise.resolve(this.db.get(id));
+    getById(id: string): Promise<ActorName | null> {
+        return Promise.resolve(this.db.get(id) || null);
     }
 
     getByIds(ids: string[]): Promise<ActorName[]> {
@@ -58,19 +58,22 @@ export class MemoryActorNameRepository implements IActorNameRepository {
         if (!!this.db.get(data.id)) {
             return Promise.reject(new Error(`Item already exists!`));
         }
-        this.db.set(data.id, { ...{ createdAt: Date.now() }, ...data });
+        data = { ...{ createdAt: Date.now() }, ...data };
+        this.db.set(data.id, data);
 
-        return this.getById(data.id);
+        return Promise.resolve(data);
     }
 
-    update(data: RepUpdateData<ActorName>): Promise<ActorName> {
-        const item = this.db.get(data.item.id);
+    update(data: RepUpdateData<string, ActorName>): Promise<ActorName> {
+        const item = this.db.get(data.id);
         if (!item) {
-            return Promise.reject(new Error(`Item not found! id=${data.item.id}`));
+            return Promise.reject(new Error(`Item not found! id=${data.id}`));
         }
 
-        for (let prop in data.item) {
-            (<any>item)[prop] = (<any>data.item)[prop]
+        if (data.set) {
+            for (let prop in data.set) {
+                (<any>item)[prop] = (<any>data.set)[prop]
+            }
         }
 
         if (data.delete) {

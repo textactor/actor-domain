@@ -4,6 +4,7 @@ import { MemoryActorRepository } from './memoryActorRepository';
 import { MemoryActorNameRepository } from './memoryActorNameRepository';
 import { SaveActor } from './saveActor';
 import { ActorHelper, ActorType } from '../entities';
+import { ActorNameType } from '../entities/actorName';
 
 
 test('should save a new actor', async t => {
@@ -16,8 +17,15 @@ test('should save a new actor', async t => {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
-        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name })),
+        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name, type: ActorNameType.WIKI })),
         type: ActorType.PLACE,
+        wikiEntity: {
+            wikiDataId: '',
+            name: '',
+            wikiPageId: 1,
+            wikiPageTitle: '',
+            countLinks: 1,
+        }
     };
 
     const actor = ActorHelper.build(actorData);
@@ -38,8 +46,15 @@ test('should save an existing actor', async t => {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
-        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name })),
+        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name, type: ActorNameType.WIKI })),
         type: ActorType.PLACE,
+        wikiEntity: {
+            wikiDataId: '',
+            name: '',
+            wikiPageId: 1,
+            wikiPageTitle: '',
+            countLinks: 1,
+        }
     }
 
     const actor = ActorHelper.build(actorData);
