@@ -38,18 +38,16 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
             return Promise.reject(new Error(`Found more than 1 existing actor: ${JSON.stringify(knownData)}`));
         }
 
-        const actorNames = ActorHelper.createActorNames(knownData.names, lang, country, actor.id);
-
         if (actorIds.length === 1) {
             actor.id = actorIds[0];
-            return this.updateActor(actor, actorNames);
+            return this.updateActor(actor, ActorHelper.createActorNames(knownData.names, lang, country, actor.id));
         }
 
-        return this.createActor(actor, actorNames);
+        return this.createActor(actor, ActorHelper.createActorNames(knownData.names, lang, country, actor.id));
     }
 
     private async createActor(actor: Actor, names: ActorName[]): Promise<Actor> {
-        debug(`Creating new actor: ${actor.name}`);
+        debug(`Creating new actor: ${actor.name}, ${JSON.stringify(names)}`);
         const createdActor = await this.actorRepository.create(actor);
 
         await this.nameRepository.addNames(names);
@@ -59,7 +57,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
     private async updateActor(actor: Actor, names: ActorName[]): Promise<Actor> {
 
-        debug(`Updating actor: ${actor.name}`);
+        debug(`Updating actor: ${actor.name}, ${JSON.stringify(names)}`);
 
         const lang = actor.lang;
         const country = actor.country;
@@ -108,7 +106,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
         let diff = arrayDiff(oldWikiNames, newWikiNames, (a, b) => a.id === b.id);
 
         if (diff.removed && diff.removed.length) {
-            debug(`Removing wiki names: ${diff.removed}`);
+            debug(`Removing wiki names: ${JSON.stringify(diff.removed)}`);
             await Promise.all(diff.removed.map(name => this.nameRepository.delete(name.id)));
         }
 
@@ -116,7 +114,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
         if (diff.added && diff.added.length) {
             const addNames = ActorHelper.sortActorNames(diff.added);
-            debug(`Adding wiki names: ${addNames}`);
+            debug(`Adding wiki names: ${JSON.stringify(addNames)}`);
             await this.nameRepository.addNames(addNames);
         }
     }
