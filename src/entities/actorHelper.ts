@@ -54,7 +54,7 @@ export class ActorHelper {
             abbr,
             wikiDataId: knownData.wikiEntity.wikiDataId,
             wikiPageTitle: knownData.wikiEntity.wikiPageTitle,
-            countLinks: knownData.wikiEntity.countLinks,
+            wikiCountLinks: knownData.wikiEntity.countLinks,
         };
         if (knownData.wikiEntity) {
             if (knownData.wikiEntity.description) {

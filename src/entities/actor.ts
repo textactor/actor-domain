@@ -24,5 +24,5 @@ export type Actor = {
     updatedAt?: number
 
     description?: string
-    countLinks: number
+    wikiCountLinks: number
 }

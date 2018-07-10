@@ -84,4 +84,13 @@ export class MemoryActorNameRepository implements IActorNameRepository {
 
         return Promise.resolve(item);
     }
+
+    all(): Promise<ActorName[]> {
+        const array: ActorName[] = []
+        for (let item of this.db.values()) {
+            array.push(item);
+        }
+
+        return Promise.resolve(array);
+    }
 }
