@@ -1,9 +1,9 @@
 
 import test from 'ava';
-import { MemoryActorRepository } from './memoryActorRepository';
-import { MemoryActorNameRepository } from './memoryActorNameRepository';
-import { SaveActor } from './saveActor';
-import { ActorHelper, ActorType } from '../entities';
+import { MemoryActorRepository } from './memory-actor-repository';
+import { MemoryActorNameRepository } from './memory-actor-name-repository';
+import { SaveActor } from './save-actor';
+import { ActorHelper, ActorType, KnownActorData } from '../entities';
 import { ActorNameType } from '../entities/actorName';
 
 
@@ -13,7 +13,7 @@ test('should save a new actor', async t => {
 
     const saveActor = new SaveActor(actorRepository, nameRepository);
 
-    const actorData = {
+    const actorData: KnownActorData = {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
@@ -22,9 +22,9 @@ test('should save a new actor', async t => {
         wikiEntity: {
             wikiDataId: '',
             name: '',
-            wikiPageId: 1,
             wikiPageTitle: '',
             countLinks: 1,
+            countryCodes: [],
         }
     };
 
@@ -42,7 +42,7 @@ test('should save an existing actor', async t => {
 
     const saveActor = new SaveActor(actorRepository, nameRepository);
 
-    const actorData = {
+    const actorData: KnownActorData = {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
@@ -51,9 +51,9 @@ test('should save an existing actor', async t => {
         wikiEntity: {
             wikiDataId: '',
             name: '',
-            wikiPageId: 1,
             wikiPageTitle: '',
             countLinks: 1,
+            countryCodes: [],
         }
     }
 

@@ -1,42 +1,18 @@
 
 import { RepUpdateData } from '@textactor/domain';
-import { IActorNameRepository } from './actorNameRepository';
-import { ActorName } from '../entities';
+import { IActorRepository } from './actor-repository';
+import { Actor } from '../entities';
 
 
-export class MemoryActorNameRepository implements IActorNameRepository {
+export class MemoryActorRepository implements IActorRepository {
+    private db: Map<string, Actor> = new Map()
 
-    private db: Map<string, ActorName> = new Map()
-
-    getNamesByActorId(actorId: string): Promise<ActorName[]> {
-        const list: ActorName[] = [];
-        for (let item of this.db.values()) {
-            if (item.actorId === actorId) {
-                list.push(item);
-            }
-        }
-        return Promise.resolve(list);
-    }
-
-    addNames(names: ActorName[]): Promise<ActorName[]> {
-        const list: ActorName[] = [];
-        for (let name of names) {
-            if (!this.db.has(name.id)) {
-                name = { ...{ createdAt: Date.now() }, ...name };
-                list.push(name);
-                this.db.set(name.id, name);
-            }
-        }
-
-        return Promise.resolve(list);
-    }
-
-    getById(id: string): Promise<ActorName | null> {
+    getById(id: string): Promise<Actor | null> {
         return Promise.resolve(this.db.get(id) || null);
     }
 
-    getByIds(ids: string[]): Promise<ActorName[]> {
-        const list: ActorName[] = [];
+    getByIds(ids: string[]): Promise<Actor[]> {
+        const list: Actor[] = [];
         for (let id of ids) {
             const item = this.db.get(id);
             if (item) {
@@ -54,7 +30,7 @@ export class MemoryActorNameRepository implements IActorNameRepository {
         return Promise.resolve(this.db.delete(id));
     }
 
-    create(data: ActorName): Promise<ActorName> {
+    create(data: Actor): Promise<Actor> {
         if (!!this.db.get(data.id)) {
             return Promise.reject(new Error(`Item already exists!`));
         }
@@ -64,7 +40,7 @@ export class MemoryActorNameRepository implements IActorNameRepository {
         return Promise.resolve(data);
     }
 
-    update(data: RepUpdateData<string, ActorName>): Promise<ActorName> {
+    update(data: RepUpdateData<string, Actor>): Promise<Actor> {
         const item = this.db.get(data.id);
         if (!item) {
             return Promise.reject(new Error(`Item not found! id=${data.id}`));
@@ -85,8 +61,8 @@ export class MemoryActorNameRepository implements IActorNameRepository {
         return Promise.resolve(item);
     }
 
-    all(): Promise<ActorName[]> {
-        const array: ActorName[] = []
+    all(): Promise<Actor[]> {
+        const array: Actor[] = []
         for (let item of this.db.values()) {
             array.push(item);
         }

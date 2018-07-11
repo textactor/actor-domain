@@ -15,6 +15,7 @@ export type KnownActorData = {
         wikiPageTitle: string
         description?: string
         countLinks: number
+        countryCodes: string[]
     }
     names: KnownActorName[]
     context?: string

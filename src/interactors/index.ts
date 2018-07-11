@@ -1,6 +1,6 @@
 
-export { IActorReadRepository, IActorRepository, IActorWriteRepository } from './actorRepository';
-export { IActorNameReadRepository, IActorNameRepository, IActorNameWriteRepository } from './actorNameRepository';
-export { MemoryActorRepository } from './memoryActorRepository';
-export { MemoryActorNameRepository } from './memoryActorNameRepository';
-export { SaveActor } from './saveActor';
+export { IActorReadRepository, IActorRepository, IActorWriteRepository } from './actor-repository';
+export { IActorNameReadRepository, IActorNameRepository, IActorNameWriteRepository } from './actor-name-repository';
+export { MemoryActorRepository } from './memory-actor-repository';
+export { MemoryActorNameRepository } from './memory-actor-name-repository';
+export { SaveActor } from './save-actor';

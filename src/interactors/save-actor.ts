@@ -3,16 +3,21 @@ const debug = require('debug')('textactor:actor-domain');
 
 import { Actor, ActorHelper, ActorName } from "../entities";
 import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
-import { IActorRepository } from "./actorRepository";
-import { IActorNameRepository } from "./actorNameRepository";
+import { IActorRepository } from "./actor-repository";
+import { IActorNameRepository } from "./actor-name-repository";
 import { KnownActorData } from "../entities/actorHelper";
 import { ActorNameType } from "../entities/actorName";
 import { diff as arrayDiff } from 'fast-array-diff';
+import { logger } from "../logger";
+import { DeleteActor } from "./delete-actor";
 
 export class SaveActor extends UseCase<KnownActorData, Actor, void> {
+    private deleteActorUseCase: DeleteActor
 
     constructor(private actorRepository: IActorRepository, private nameRepository: IActorNameRepository) {
         super();
+
+        this.deleteActorUseCase = new DeleteActor(actorRepository, nameRepository);
     }
 
     protected async innerExecute(knownData: KnownActorData): Promise<Actor> {
@@ -21,7 +26,13 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
         const lang = actor.lang;
         const country = actor.country;
-        let names = knownData.names.map(item => item.name)
+        const knownNames =
+            [{
+                type: ActorNameType.WIKI,
+                name: knownData.wikiEntity.wikiDataId
+            }].concat(knownData.names);
+
+        let names = knownNames.map(item => item.name)
             .filter(item => ActorHelper.isValidName(item, lang));
 
         // names.unshift(actor.name);
@@ -35,15 +46,42 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
 
         if (actorIds.length > 1) {
-            return Promise.reject(new Error(`Found more than 1 existing actor: ${JSON.stringify(knownData)}`));
+            return this.conflictActor(actorIds, knownData);
         }
 
         if (actorIds.length === 1) {
             actor.id = actorIds[0];
-            return this.updateActor(actor, ActorHelper.createActorNames(knownData.names, lang, country, actor.id));
+            return this.updateActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
         }
 
-        return this.createActor(actor, ActorHelper.createActorNames(knownData.names, lang, country, actor.id));
+        return this.createActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
+    }
+
+    private async conflictActor(ids: string[], knownData: KnownActorData): Promise<Actor> {
+        const actors = await this.actorRepository.getByIds(ids);
+
+        const wikiDataId = knownData.wikiEntity.wikiDataId;
+
+        logger.warn(`Found more than 1 existing actor for: ${JSON.stringify({ name: knownData.name, names: knownData.names })}`,
+            actors.map(item => ({ id: item.id, name: item.name, wikiDataId: item.wikiDataId })));
+
+        const isLocal = knownData.wikiEntity.countryCodes.includes(knownData.country);
+
+        for (let actor of actors) {
+            if (actor.wikiDataId !== wikiDataId) {
+                if (isLocal || knownData.wikiEntity.countLinks >= actor.wikiCountLinks) {
+                    await this.deleteActorUseCase.execute(actor.id);
+                    logger.warn(`Deleted not locale/popular actor: ${actor.name}`, actor);
+                    return this.innerExecute(knownData);
+                }
+            }
+        }
+
+        const unpopularActor = actors.sort((a, b) => a.wikiCountLinks - b.wikiCountLinks)[0];
+
+        await this.deleteActorUseCase.execute(unpopularActor.id);
+        logger.warn(`Deleted most unpopular actor: ${unpopularActor.name}`, unpopularActor);
+        return this.innerExecute(knownData);
     }
 
     private async createActor(actor: Actor, names: ActorName[]): Promise<Actor> {
