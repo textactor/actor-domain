@@ -34,6 +34,10 @@ test('should save a new actor', async t => {
 
     t.not(actor.id, savedActor.id);
     t.is(actor.name, savedActor.name);
+
+    const savedNames = await nameRepository.getNamesByActorId(savedActor.id);
+    // t.log(JSON.stringify(savedNames));
+    t.is(savedNames.length, 2);
 })
 
 test('should save an existing actor', async t => {
@@ -66,7 +70,7 @@ test('should save an existing actor', async t => {
 
     const actorNames = await nameRepository.getNamesByActorId(savedActor1.id);
 
-    t.log(JSON.stringify(actorNames));
+    // t.log(JSON.stringify(actorNames));
 
     t.is(actorNames.length, 2);
     t.is(actorNames[0].name, actorData.names[0].name);
@@ -79,7 +83,7 @@ test('should save an existing actor', async t => {
 
     const actorNames2 = await nameRepository.getNamesByActorId(savedActor2.id);
 
-    t.log(JSON.stringify(actorNames2));
+    // t.log(JSON.stringify(actorNames2));
 
     t.is(actorNames2.length, 1);
     t.is(actorNames2[0].name, actorData2.names[0].name);

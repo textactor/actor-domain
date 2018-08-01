@@ -9,6 +9,7 @@ export type KnownActorData = {
     name: string
     abbr?: string
     type?: ActorType
+    commonName?: string
     wikiEntity: {
         wikiDataId: string
         name: string
@@ -57,6 +58,7 @@ export class ActorHelper {
             wikiPageTitle: knownData.wikiEntity.wikiPageTitle,
             wikiCountLinks: knownData.wikiEntity.countLinks,
         };
+
         if (knownData.wikiEntity) {
             if (knownData.wikiEntity.description) {
                 actor.description = knownData.wikiEntity.description;
@@ -68,6 +70,14 @@ export class ActorHelper {
             if (actor.wikiPageTitle === actor.name) {
                 delete actor.wikiPageTitle;
             }
+        }
+
+        if (knownData.commonName) {
+            actor.commonName = knownData.commonName;
+        }
+
+        if (actor.name === actor.commonName) {
+            delete actor.commonName;
         }
 
         return actor;
