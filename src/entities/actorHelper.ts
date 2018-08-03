@@ -10,6 +10,7 @@ export type KnownActorData = {
     abbr?: string
     type?: ActorType
     commonName?: string
+    englishName?: string
     wikiEntity: {
         wikiDataId: string
         name: string
@@ -70,6 +71,10 @@ export class ActorHelper {
             if (actor.wikiPageTitle === actor.name) {
                 delete actor.wikiPageTitle;
             }
+        }
+
+        if (knownData.englishName) {
+            actor.englishName = knownData.englishName;
         }
 
         if (knownData.commonName) {

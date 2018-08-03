@@ -15,6 +15,7 @@ export type Actor = {
     country: string
 
     commonName?: string
+    englishName?: string
 
     abbr?: string
 
