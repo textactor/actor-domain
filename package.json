@@ -1,6 +1,6 @@
 {
   "name": "@textactor/actor-domain",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "textactor/actor-domain",
   "main": "./lib/index.js",
   "types": "./types/index.d.ts",
@@ -43,7 +43,7 @@
     "typescript": "latest"
   },
   "dependencies": {
-    "@textactor/domain": "^0.1.6",
+    "@textactor/domain": "^0.1.7",
     "fast-array-diff": "^0.2.0",
     "shortid": "^2.2.8"
   }
