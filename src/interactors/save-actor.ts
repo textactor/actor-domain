@@ -63,13 +63,29 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
         const wikiDataId = knownData.wikiEntity.wikiDataId;
 
         logger.warn(`Found more than 1 existing actor for: ${JSON.stringify({ name: knownData.name, names: knownData.names })}`,
-            actors.map(item => ({ id: item.id, name: item.name, wikiDataId: item.wikiDataId })));
+            { actors: actors.map(item => ({ id: item.id, name: item.name, wikiDataId: item.wikiDataId })) });
 
-        const isLocal = knownData.wikiEntity.countryCodes.includes(knownData.country);
+        const isLocalNewActor = knownData.wikiEntity.countryCodes.includes(knownData.country);
 
         for (let actor of actors) {
             if (actor.wikiDataId !== wikiDataId) {
-                if (isLocal || knownData.wikiEntity.countLinks >= actor.wikiCountLinks) {
+                const isLocalOldActor = actor.countryCodes && actor.countryCodes.includes(knownData.country);
+                let deleteOldActor = false;
+
+                const oldActorPopularity = getEntityPopularity(actor.wikiCountLinks);
+                const newActorPopularity = getEntityPopularity(knownData.wikiEntity.countLinks);
+
+                // both are local entities
+                if (isLocalNewActor && isLocalOldActor) {
+                    deleteOldActor = knownData.wikiEntity.countLinks > actor.wikiCountLinks;
+                }
+                else if (isLocalNewActor) {
+                    deleteOldActor = oldActorPopularity < EntityPopularity.POPULAR && newActorPopularity > EntityPopularity.LOW;
+                } else if (isLocalOldActor) {
+                    deleteOldActor = newActorPopularity === EntityPopularity.POPULAR && oldActorPopularity <= EntityPopularity.LOW;
+                }
+
+                if (deleteOldActor) {
                     await this.deleteActorUseCase.execute(actor.id);
                     logger.warn(`Deleted not locale/popular actor: ${actor.name}`, actor);
                     return this.innerExecute(knownData);
@@ -156,4 +172,30 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
             await this.nameRepository.addNames(addNames);
         }
     }
+}
+
+function getEntityPopularity(countLinks: number): EntityPopularity {
+    if (!countLinks || countLinks < 0) {
+        return EntityPopularity.UNKNOWN;
+    }
+
+    if (countLinks < 8) {
+        return EntityPopularity.LOW;
+    }
+    if (countLinks < 40) {
+        return EntityPopularity.NORMAL;
+    }
+    if (countLinks < 80) {
+        return EntityPopularity.HIGH;
+    }
+
+    return EntityPopularity.POPULAR;
+}
+
+export enum EntityPopularity {
+    UNKNOWN = 1,
+    LOW = 2,
+    NORMAL = 3,
+    HIGH = 4,
+    POPULAR = 5,
 }
