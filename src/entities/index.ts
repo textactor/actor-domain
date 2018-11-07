@@ -1,4 +1,4 @@
 
 export { Actor, ActorType } from './actor';
-export { ActorHelper, KnownActorData } from './actorHelper';
-export { ActorName, ActorNameType } from './actorName';
+export { ActorHelper, KnownActorData } from './actor-helper';
+export { ActorName, ActorNameType } from './actor-name';

@@ -1,7 +1,7 @@
 import { Actor, ActorType } from "./actor";
 import { NameHelper, md5, uniqByProp } from '@textactor/domain';
 import { generate as generateNewId } from 'shortid';
-import { ActorNameType, ActorName } from "./actorName";
+import { ActorNameType, ActorName } from "./actor-name";
 
 export type KnownActorData = {
     lang: string

@@ -1,7 +1,7 @@
 
 import test from 'ava';
-import { ActorHelper } from './actorHelper';
-import { ActorNameType, ActorName } from './actorName';
+import { ActorHelper } from './actor-helper';
+import { ActorNameType, ActorName } from './actor-name';
 // import { ActorType } from '.';
 
 test('#isValidName', t => {

@@ -4,7 +4,7 @@ import { MemoryActorRepository } from './memory-actor-repository';
 import { MemoryActorNameRepository } from './memory-actor-name-repository';
 import { SaveActor } from './save-actor';
 import { ActorHelper, ActorType, KnownActorData } from '../entities';
-import { ActorNameType } from '../entities/actorName';
+import { ActorNameType } from '../entities/actor-name';
 
 
 test('should save a new actor', async t => {
