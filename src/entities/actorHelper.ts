@@ -26,6 +26,7 @@ export type KnownActorData = {
 export type KnownActorName = {
     name: string
     type: ActorNameType
+    popularity: number
 }
 
 export class ActorHelper {

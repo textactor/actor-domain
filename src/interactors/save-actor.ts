@@ -5,7 +5,7 @@ import { Actor, ActorHelper, ActorName } from "../entities";
 import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
 import { IActorRepository } from "./actor-repository";
 import { IActorNameRepository } from "./actor-name-repository";
-import { KnownActorData } from "../entities/actorHelper";
+import { KnownActorData, KnownActorName } from "../entities/actorHelper";
 import { ActorNameType } from "../entities/actorName";
 import { diff as arrayDiff } from 'fast-array-diff';
 import { logger } from "../logger";
@@ -26,11 +26,9 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
         const lang = actor.lang;
         const country = actor.country;
-        const knownNames =
-            [{
-                type: ActorNameType.WIKI,
-                name: knownData.wikiEntity.wikiDataId
-            }].concat(knownData.names);
+        const knownNames: KnownActorName[] =
+            [{ name: 'wiki-' + knownData.wikiEntity.wikiDataId, popularity: 1, type: ActorNameType.WIKI }]
+                .concat(knownData.names);
 
         let names = knownNames.map(item => item.name)
             .filter(item => ActorHelper.isValidName(item, lang));
@@ -54,7 +52,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
             return this.updateActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
         }
 
-        return this.createActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
+        return this.createActor(actor, ActorHelper.createActorNames(knownNames.filter(item => item.popularity > 0), lang, country, actor.id));
     }
 
     private async conflictActor(ids: string[], knownData: KnownActorData): Promise<Actor> {

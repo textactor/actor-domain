@@ -17,7 +17,7 @@ test('should save a new actor', async t => {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
-        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name, type: ActorNameType.WIKI })),
+        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name, type: ActorNameType.WIKI, popularity: 1 })),
         type: ActorType.PLACE,
         wikiEntity: {
             wikiDataId: '',
@@ -50,7 +50,7 @@ test('should save an existing actor', async t => {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
-        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name, type: ActorNameType.WIKI })),
+        names: ['Chișinău', 'Chisinau', 'chisinau', 'Chișinăului'].map(name => ({ name, type: ActorNameType.WIKI, popularity: 1 })),
         type: ActorType.PLACE,
         wikiEntity: {
             wikiDataId: '',
