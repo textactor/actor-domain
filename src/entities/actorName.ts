@@ -6,6 +6,7 @@ export type ActorName = {
     country: string
     actorId: string
     type: ActorNameType
+    countWords: number
     createdAt?: number
 }
 

@@ -13,7 +13,7 @@ test('#isValidName', t => {
 });
 
 test('#sortActorNames', t => {
-    const defaultName: ActorName = { type: ActorNameType.WIKI, name: '', id: '', actorId: '', country: '', lang: '' };
+    const defaultName: ActorName = { type: ActorNameType.WIKI, name: '', id: '', actorId: '', country: '', lang: '', countWords: 1 };
 
     let result = ActorHelper.sortActorNames([
         { ...defaultName, type: ActorNameType.WIKI },

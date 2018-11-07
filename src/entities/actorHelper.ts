@@ -40,13 +40,13 @@ export class ActorHelper {
         let abbr = knownData.abbr;
         const name = knownData.name;
 
-        if (!abbr && !NameHelper.isAbbr(name)) {
-            const abbrs = knownData.names.map(item => item.name)
-                .filter(name => NameHelper.isAbbr(name) && ActorHelper.isValidName(name, lang));
-            if (abbrs.length) {
-                abbr = NameHelper.findAbbr(abbrs) || undefined;
-            }
-        }
+        // if (!abbr && !NameHelper.isAbbr(name)) {
+        //     const abbrs = knownData.names.map(item => item.name)
+        //         .filter(name => NameHelper.isAbbr(name) && ActorHelper.isValidName(name, lang));
+        //     if (abbrs.length) {
+        //         abbr = NameHelper.findAbbr(abbrs) || undefined;
+        //     }
+        // }
 
         const actor: Actor = {
             id,
@@ -114,7 +114,15 @@ export class ActorHelper {
 
     static createActorNames(names: KnownActorName[], lang: string, country: string, actorId: string): ActorName[] {
         const actorNames = names.filter(item => ActorHelper.isValidName(item.name, lang))
-            .map(item => ({ type: item.type, name: item.name, lang, country, actorId, id: ActorHelper.createNameId(item.name, lang, country) }));
+            .map<ActorName>(item => ({
+                type: item.type,
+                name: item.name,
+                lang,
+                country,
+                actorId,
+                id: ActorHelper.createNameId(item.name, lang, country),
+                countWords: NameHelper.countWords(item.name),
+            }));
 
         return uniqByProp(actorNames, 'id');
     }
