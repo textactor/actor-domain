@@ -5,7 +5,7 @@ import { Actor, ActorHelper, ActorName } from "../entities";
 import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
 import { IActorRepository } from "./actor-repository";
 import { IActorNameRepository } from "./actor-name-repository";
-import { KnownActorData, KnownActorName } from "../entities/actorHelper";
+import { KnownActorData } from "../entities/actorHelper";
 import { ActorNameType } from "../entities/actorName";
 import { diff as arrayDiff } from 'fast-array-diff';
 import { logger } from "../logger";
@@ -26,9 +26,10 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
 
         const lang = actor.lang;
         const country = actor.country;
-        const knownNames: KnownActorName[] =
-            [{ name: 'wiki-' + knownData.wikiEntity.wikiDataId, popularity: 1, type: ActorNameType.WIKI }]
-                .concat(knownData.names);
+        const knownNames = knownData.names.slice(0);
+        if (knownData.wikiEntity.wikiDataId) {
+            knownNames.push({ name: 'wiki-' + knownData.wikiEntity.wikiDataId, popularity: 1, type: ActorNameType.WIKI });
+        }
 
         let names = knownNames.map(item => item.name)
             .filter(item => ActorHelper.isValidName(item, lang));
