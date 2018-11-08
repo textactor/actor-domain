@@ -35,16 +35,16 @@
   },
   "homepage": "https://github.com/textactor/actor-domain#readme",
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/node": "10.12.3",
     "@types/shortid": "^0.0.29",
-    "ava": "^0.23.0",
-    "debug": "^3.1.0",
+    "ava": "^0.25.0",
+    "debug": "^4.1.0",
     "rimraf": "^2.6.2",
-    "typescript": "latest"
+    "typescript": "3.1.6"
   },
   "dependencies": {
     "@textactor/domain": "^0.1.7",
     "fast-array-diff": "^0.2.0",
-    "shortid": "^2.2.8"
+    "shortid": "^2.2.14"
   }
 }
