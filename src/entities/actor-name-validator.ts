@@ -36,6 +36,8 @@ const createSchema = Joi.object().keys({
 
 const updateSchema = Joi.object().keys({
     id: schema.id.required(),
-    set: Joi.object().keys({}),
+    set: Joi.object().keys({
+        type: schema.type,
+    }),
     delete: Joi.array().max(0),
 }).or('set', 'delete').required();

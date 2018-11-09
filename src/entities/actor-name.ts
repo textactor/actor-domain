@@ -14,3 +14,5 @@ export enum ActorNameType {
     WIKI = 'WIKI',
     SAME = 'SAME',
 }
+
+export const ACTOR_NAME_UPDATE_FIELDS = ['type'];
