@@ -35,6 +35,7 @@
   },
   "homepage": "https://github.com/textactor/actor-domain#readme",
   "devDependencies": {
+    "@types/joi": "^14.0.0",
     "@types/node": "10.12.3",
     "@types/shortid": "^0.0.29",
     "ava": "^0.25.0",
@@ -44,6 +45,7 @@
   },
   "dependencies": {
     "fast-array-diff": "^0.2.0",
+    "joi": "^14.0.4",
     "shortid": "^2.2.14"
   }
 }
