@@ -59,14 +59,6 @@
     pretty-ms "^0.2.1"
     text-table "^0.2.0"
 
-"@textactor/domain@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@textactor/domain/-/domain-0.1.7.tgz#33d92a49e847cf534f90fb935df59a751ebc65c9"
-  integrity sha512-JP+njVSm83VBxwA4jnTdbtYtyXHie8AdhYnZwVMadQR/EBebwNJj5Cb710066EqhN4Cup8eOSonEj+ZY0fwhSg==
-  dependencies:
-    atonic "^1.0.4"
-    standard-text "^0.1.1"
-
 "@types/node@10.12.3":
   version "10.12.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.3.tgz#3918b73ceed484e58367be5acb79d1775239e393"
@@ -227,11 +219,6 @@ atob@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
-
-atonic@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/atonic/-/atonic-1.0.4.tgz#7db3f216070abb68660f18122a380903e09d27c7"
-  integrity sha1-fbPyFgcKu2hmDxgSKjgJA+CdJ8c=
 
 auto-bind@^1.1.0:
   version "1.2.1"
@@ -3238,11 +3225,6 @@ stack-utils@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/stack-utils/-/stack-utils-1.0.1.tgz#d4f33ab54e8e38778b0ca5cfd3b3afb12db68620"
   integrity sha1-1PM6tU6OOHeLDKXP07OvsS22hiA=
-
-standard-text@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/standard-text/-/standard-text-0.1.1.tgz#e5a4fbbdd6a7fed7df175f5ea0220c49c573a188"
-  integrity sha1-5aT7vdan/tffF19eoCIMScVzoYg=
 
 static-extend@^0.1.1:
   version "0.1.2"

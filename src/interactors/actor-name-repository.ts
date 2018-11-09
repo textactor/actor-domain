@@ -1,15 +1,9 @@
+import { Repository } from "@textactor/domain";
+import { ActorName } from "../entities/actor-name";
 
-import { IWriteRepository, IReadRepository } from '@textactor/domain';
-import { ActorName } from '../entities';
 
-export interface IActorNameWriteRepository extends IWriteRepository<string, ActorName> {
-    addNames(names: ActorName[]): Promise<ActorName[]>
-}
 
-export interface IActorNameReadRepository extends IReadRepository<string, ActorName> {
+export interface ActorNameRepository extends Repository<ActorName> {
     getNamesByActorId(actorId: string): Promise<ActorName[]>
-}
-
-export interface IActorNameRepository extends IActorNameReadRepository, IActorNameWriteRepository {
-
+    addNames(names: ActorName[]): Promise<ActorName[]>
 }

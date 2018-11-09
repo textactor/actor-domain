@@ -1,12 +1,18 @@
 
-import { RepUpdateData } from '@textactor/domain';
-import { IActorNameRepository } from './actor-name-repository';
-import { ActorName } from '../entities';
+import { RepositoryUpdateData } from '@textactor/domain';
+import { ActorNameRepository } from './actor-name-repository';
+import { ActorName } from '../entities/actor-name';
 
 
-export class MemoryActorNameRepository implements IActorNameRepository {
-
+export class MemoryActorNameRepository implements ActorNameRepository {
     private db: Map<string, ActorName> = new Map()
+
+    async deleteStorage() {
+        this.db.clear();
+    }
+    async createStorage() {
+
+    }
 
     getNamesByActorId(actorId: string): Promise<ActorName[]> {
         const list: ActorName[] = [];
@@ -64,7 +70,7 @@ export class MemoryActorNameRepository implements IActorNameRepository {
         return Promise.resolve(data);
     }
 
-    update(data: RepUpdateData<string, ActorName>): Promise<ActorName> {
+    update(data: RepositoryUpdateData<ActorName>): Promise<ActorName> {
         const item = this.db.get(data.id);
         if (!item) {
             return Promise.reject(new Error(`Item not found! id=${data.id}`));

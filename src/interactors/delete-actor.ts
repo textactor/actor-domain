@@ -1,11 +1,11 @@
 
 import { UseCase } from "@textactor/domain";
-import { IActorRepository } from "./actor-repository";
-import { IActorNameRepository } from "./actor-name-repository";
+import { ActorRepository } from "./actor-repository";
+import { ActorNameRepository } from "./actor-name-repository";
 
 export class DeleteActor extends UseCase<string, boolean, void> {
 
-    constructor(private actorRepository: IActorRepository, private nameRepository: IActorNameRepository) {
+    constructor(private actorRepository: ActorRepository, private nameRepository: ActorNameRepository) {
         super();
     }
 

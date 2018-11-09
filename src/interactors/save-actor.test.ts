@@ -3,8 +3,9 @@ import test from 'ava';
 import { MemoryActorRepository } from './memory-actor-repository';
 import { MemoryActorNameRepository } from './memory-actor-name-repository';
 import { SaveActor } from './save-actor';
-import { ActorHelper, ActorType, KnownActorData } from '../entities';
 import { ActorNameType } from '../entities/actor-name';
+import { BuildActorParams, ActorHelper } from '../entities/actor-helper';
+import { ActorType } from '../entities/actor';
 
 
 test('should save a new actor', async t => {
@@ -13,7 +14,7 @@ test('should save a new actor', async t => {
 
     const saveActor = new SaveActor(actorRepository, nameRepository);
 
-    const actorData: KnownActorData = {
+    const actorData: BuildActorParams = {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',
@@ -46,7 +47,7 @@ test('should save an existing actor', async t => {
 
     const saveActor = new SaveActor(actorRepository, nameRepository);
 
-    const actorData: KnownActorData = {
+    const actorData: BuildActorParams = {
         lang: 'ro',
         country: 'md',
         name: 'Chișinău',

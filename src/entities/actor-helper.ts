@@ -1,9 +1,9 @@
 import { Actor, ActorType } from "./actor";
-import { NameHelper, md5, uniqByProp } from '@textactor/domain';
+import { NameHelper, md5, uniqByProperty } from '@textactor/domain';
 import { generate as generateNewId } from 'shortid';
 import { ActorNameType, ActorName } from "./actor-name";
 
-export type KnownActorData = {
+export type BuildActorParams = {
     lang: string
     country: string
     name: string
@@ -19,11 +19,11 @@ export type KnownActorData = {
         countLinks: number
         countryCodes: string[]
     }
-    names: KnownActorName[]
+    names: BuildActorNameParams[]
     context?: string
 }
 
-export type KnownActorName = {
+export type BuildActorNameParams = {
     name: string
     type: ActorNameType
     popularity: number
@@ -34,36 +34,28 @@ export class ActorHelper {
     static newId(): string {
         return generateNewId();
     }
-    static build(knownData: KnownActorData): Actor {
+    static build(params: BuildActorParams): Actor {
         const id = ActorHelper.newId();
-        const lang = knownData.lang.trim().toLowerCase();
-        const country = knownData.country.trim().toLowerCase();
-        let abbr = knownData.abbr;
-        const name = knownData.name;
-
-        // if (!abbr && !NameHelper.isAbbr(name)) {
-        //     const abbrs = knownData.names.map(item => item.name)
-        //         .filter(name => NameHelper.isAbbr(name) && ActorHelper.isValidName(name, lang));
-        //     if (abbrs.length) {
-        //         abbr = NameHelper.findAbbr(abbrs) || undefined;
-        //     }
-        // }
+        const lang = params.lang.trim().toLowerCase();
+        const country = params.country.trim().toLowerCase();
+        let abbr = params.abbr;
+        const name = params.name;
 
         const actor: Actor = {
             id,
             lang,
             country,
-            type: knownData.type,
+            type: params.type,
             name,
             abbr,
-            wikiDataId: knownData.wikiEntity.wikiDataId,
-            wikiPageTitle: knownData.wikiEntity.wikiPageTitle,
-            wikiCountLinks: knownData.wikiEntity.countLinks,
+            wikiDataId: params.wikiEntity.wikiDataId,
+            wikiPageTitle: params.wikiEntity.wikiPageTitle,
+            wikiCountLinks: params.wikiEntity.countLinks,
         };
 
-        if (knownData.wikiEntity) {
-            if (knownData.wikiEntity.description) {
-                actor.description = knownData.wikiEntity.description;
+        if (params.wikiEntity) {
+            if (params.wikiEntity.description) {
+                actor.description = params.wikiEntity.description;
                 if (actor.description.length > 100) {
                     actor.description = actor.description.substr(0, 100).trim();
                 }
@@ -74,12 +66,12 @@ export class ActorHelper {
             }
         }
 
-        if (knownData.englishName) {
-            actor.englishName = knownData.englishName;
+        if (params.englishName) {
+            actor.englishName = params.englishName;
         }
 
-        if (knownData.commonName) {
-            actor.commonName = knownData.commonName;
+        if (params.commonName) {
+            actor.commonName = params.commonName;
         }
 
         if (actor.name === actor.commonName) {
@@ -113,7 +105,7 @@ export class ActorHelper {
         return [lang, country, hash].join('');
     }
 
-    static createActorNames(names: KnownActorName[], lang: string, country: string, actorId: string): ActorName[] {
+    static createActorNames(names: BuildActorNameParams[], lang: string, country: string, actorId: string): ActorName[] {
         const actorNames = names.filter(item => ActorHelper.isValidName(item.name, lang))
             .map<ActorName>(item => ({
                 type: item.type,
@@ -125,7 +117,7 @@ export class ActorHelper {
                 countWords: NameHelper.countWords(item.name),
             }));
 
-        return uniqByProp(actorNames, 'id');
+        return uniqByProperty(actorNames, 'id');
     }
 
     static sortActorNames(names: ActorName[]) {

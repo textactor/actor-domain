@@ -1,26 +1,26 @@
 
 const debug = require('debug')('textactor:actor-domain');
 
-import { Actor, ActorHelper, ActorName } from "../entities";
-import { UseCase, uniq, RepUpdateData } from "@textactor/domain";
-import { IActorRepository } from "./actor-repository";
-import { IActorNameRepository } from "./actor-name-repository";
-import { KnownActorData } from "../entities/actor-helper";
-import { ActorNameType } from "../entities/actor-name";
+import { UseCase, uniq, RepositoryUpdateData } from "@textactor/domain";
+import { ActorRepository } from "./actor-repository";
+import { ActorNameRepository } from "./actor-name-repository";
+import { BuildActorParams, ActorHelper } from "../entities/actor-helper";
+import { ActorNameType, ActorName } from "../entities/actor-name";
 import { diff as arrayDiff } from 'fast-array-diff';
 import { logger } from "../logger";
 import { DeleteActor } from "./delete-actor";
+import { Actor } from "../entities/actor";
 
-export class SaveActor extends UseCase<KnownActorData, Actor, void> {
+export class SaveActor extends UseCase<BuildActorParams, Actor, void> {
     private deleteActorUseCase: DeleteActor
 
-    constructor(private actorRepository: IActorRepository, private nameRepository: IActorNameRepository) {
+    constructor(private actorRepository: ActorRepository, private nameRepository: ActorNameRepository) {
         super();
 
         this.deleteActorUseCase = new DeleteActor(actorRepository, nameRepository);
     }
 
-    protected async innerExecute(knownData: KnownActorData): Promise<Actor> {
+    protected async innerExecute(knownData: BuildActorParams): Promise<Actor> {
 
         const actor = ActorHelper.build(knownData);
 
@@ -56,7 +56,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
         return this.createActor(actor, ActorHelper.createActorNames(knownNames.filter(item => item.popularity > 0), lang, country, actor.id));
     }
 
-    private async conflictActor(ids: string[], knownData: KnownActorData): Promise<Actor> {
+    private async conflictActor(ids: string[], knownData: BuildActorParams): Promise<Actor> {
         const actors = await this.actorRepository.getByIds(ids);
 
         const wikiDataId = knownData.wikiEntity.wikiDataId;
@@ -124,7 +124,7 @@ export class SaveActor extends UseCase<KnownActorData, Actor, void> {
             return Promise.reject(new Error(`Invalid Actor id==${actor.id} locale: ${lang}_${country}`));
         }
 
-        const updateData: RepUpdateData<string, Actor> = { id: actor.id, set: {} };
+        const updateData: RepositoryUpdateData<Actor> = { id: actor.id, set: {} };
 
         Object.keys(actor).forEach(key => {
             if (['id', 'createdAt'].indexOf(key) < 0
