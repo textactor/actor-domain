@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "outDir": "lib",
+        "outDir": "dest",
         "rootDir": "./src",
         "target": "es2017",
         "noImplicitAny": true,
@@ -10,7 +10,7 @@
         "sourceMap": false,
         "moduleResolution": "node",
         "declaration": true,
-        "declarationDir": "types",
+        "declarationDir": "dest",
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "allowJs": false,
