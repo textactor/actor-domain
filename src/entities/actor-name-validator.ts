@@ -10,17 +10,17 @@ export class ActorNameValidator extends JoiEntityValidator<ActorName> {
 }
 
 const schema = {
-    id: Joi.string().min(16).max(40).required(),
+    id: Joi.string().alphanum().min(16).max(40),
 
-    lang: Joi.string().regex(/^[a-z]{2}$/).required(),
-    country: Joi.string().regex(/^[a-z]{2}$/).required(),
+    lang: Joi.string().regex(/^[a-z]{2}$/),
+    country: Joi.string().regex(/^[a-z]{2}$/),
 
-    name: Joi.string().min(2).max(200).required(),
-    actorId: Joi.string().max(40).required(),
-    type: Joi.valid('WIKI', 'SAME').required(),
-    countWords: Joi.number().integer().min(1).max(100).required(),
+    name: Joi.string().min(2).max(200),
+    actorId: Joi.string().min(1).max(40),
+    type: Joi.string().valid('WIKI', 'SAME'),
+    countWords: Joi.number().integer().min(1).max(50),
 
-    createdAt: Joi.number().integer().required(),
+    createdAt: Joi.number().integer(),
 }
 
 const createSchema = Joi.object().keys({

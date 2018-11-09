@@ -48,7 +48,7 @@ const createSchema = Joi.object().keys({
 const updateSchema = Joi.object().keys({
     id: schema.id.required(),
     set: Joi.object().keys({
-        name: schema.name.required(),
+        name: schema.name,
         commonName: schema.commonName,
         englishName: schema.englishName,
         countryCodes: schema.countryCodes,
