@@ -1,6 +1,6 @@
 import { JoiEntityValidator } from "@textactor/domain";
 import Joi = require('joi');
-import { ActorName } from "./actor-name";
+import { ActorName, ACTOR_NAME_TYPE } from "./actor-name";
 
 
 export class ActorNameValidator extends JoiEntityValidator<ActorName> {
@@ -34,10 +34,15 @@ const createSchema = Joi.object().keys({
     createdAt: schema.createdAt.required(),
 }).required();
 
+const updateSet = ACTOR_NAME_TYPE.updateFields().reduce<Joi.SchemaMap>((map, field) => {
+    map[field] = (<any>schema)[field];
+    return map;
+}, {});
+
+const updateDelete = Joi.string().valid(ACTOR_NAME_TYPE.deleteFields());
+
 const updateSchema = Joi.object().keys({
     id: schema.id.required(),
-    set: Joi.object().keys({
-        type: schema.type,
-    }),
-    delete: Joi.array().max(0),
+    set: Joi.object().keys(updateSet),
+    delete: Joi.array().items(updateDelete),
 }).or('set', 'delete').required();

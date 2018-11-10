@@ -34,6 +34,7 @@ export class ActorHelper {
     static newId(): string {
         return generateNewId();
     }
+
     static build(params: BuildActorParams): Actor {
         const id = ActorHelper.newId();
         const lang = params.lang.trim().toLowerCase();

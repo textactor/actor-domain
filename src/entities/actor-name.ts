@@ -15,4 +15,11 @@ export enum ActorNameType {
     SAME = 'SAME',
 }
 
-export const ACTOR_NAME_UPDATE_FIELDS = ['type'];
+export const ACTOR_NAME_TYPE = {
+    updateFields() {
+        return ['type'];
+    },
+    deleteFields() {
+        return [];
+    }
+}

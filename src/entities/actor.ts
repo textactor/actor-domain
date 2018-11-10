@@ -31,3 +31,22 @@ export type Actor = {
     description?: string
     wikiCountLinks: number
 }
+
+export const ACTOR_TYPE = {
+    updateFields() {
+        return [
+            'name',
+            'commonName',
+            'englishName',
+            'countryCodes',
+            'abbr',
+            'wikiPageTitle',
+            'type',
+            'description',
+            'updatedAt',
+        ]
+    },
+    deleteFields() {
+        return ['commonName', 'englishName', 'abbr', 'wikiPageTitle', 'type', 'description']
+    }
+}

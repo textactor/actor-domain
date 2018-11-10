@@ -1,7 +1,7 @@
 
-export { Actor, ActorType } from './entities/actor';
+export { Actor, ActorType, ACTOR_TYPE } from './entities/actor';
 export { ActorHelper, BuildActorParams, BuildActorNameParams } from './entities/actor-helper';
-export { ActorName, ActorNameType, ACTOR_NAME_UPDATE_FIELDS } from './entities/actor-name';
+export { ActorName, ActorNameType, ACTOR_NAME_TYPE } from './entities/actor-name';
 
 export { ActorNameValidator } from './entities/actor-name-validator';
 export { ActorValidator } from './entities/actor-validator';
