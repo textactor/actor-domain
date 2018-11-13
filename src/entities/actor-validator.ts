@@ -16,7 +16,7 @@ const schema = {
     name: Joi.string().min(2).max(200),
     commonName: Joi.string().min(2).max(200),
     englishName: Joi.string().min(2).max(200),
-    countryCodes: Joi.array().items(Joi.string().regex(/^[a-z]{2}$/).required()).unique().max(6),
+    countryCodes: Joi.array().items(Joi.string().regex(/^[a-z]{2}$/)).unique().max(6),
     abbr: Joi.string().min(1).max(50),
     wikiDataId: Joi.string().regex(/^Q\d+$/),
     wikiPageTitle: Joi.string().min(2).max(200),
