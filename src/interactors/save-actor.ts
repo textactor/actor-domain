@@ -53,7 +53,7 @@ export class SaveActor extends UseCase<BuildActorParams, Actor, void> {
             return this.updateActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
         }
 
-        return this.createActor(actor, ActorHelper.createActorNames(knownNames.filter(item => item.popularity > 0), lang, country, actor.id));
+        return this.createActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
     }
 
     private async conflictActor(ids: string[], knownData: BuildActorParams): Promise<Actor> {
