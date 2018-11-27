@@ -9,7 +9,7 @@ import { ActorNameType, ActorName } from "../entities/actor-name";
 import { diff as arrayDiff } from 'fast-array-diff';
 import { logger } from "../logger";
 import { DeleteActor } from "./delete-actor";
-import { Actor } from "../entities/actor";
+import { Actor, ACTOR_TYPE } from "../entities/actor";
 
 export class SaveActor extends UseCase<BuildActorParams, Actor, void> {
     private deleteActorUseCase: DeleteActor
@@ -126,9 +126,11 @@ export class SaveActor extends UseCase<BuildActorParams, Actor, void> {
 
         const updateData: RepositoryUpdateData<Actor> = { id: actor.id, set: {} };
 
+        const updatableFields = ACTOR_TYPE.updateFields();
+
         Object.keys(actor).forEach(key => {
-            if (['id', 'createdAt'].indexOf(key) < 0
-                && [undefined, null, ''].indexOf((<any>actor)[key]) < 0
+            if (updatableFields.includes(key)
+                && ![undefined, null, ''].includes((<any>actor)[key])
                 && (<any>actor)[key] !== (<any>existingActor)[key]) {
                 (<any>updateData.set)[key] = (<any>actor)[key];
             }
