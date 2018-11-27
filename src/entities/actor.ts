@@ -44,6 +44,7 @@ export const ACTOR_TYPE = {
             'type',
             'description',
             'updatedAt',
+            'wikiCountLinks'
         ]
     },
     deleteFields() {
