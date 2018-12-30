@@ -40,7 +40,7 @@ export class SaveActor extends UseCase<BuildActorParams, Actor, void> {
 
         const nameIds = uniq(names.map(item => ActorHelper.createNameId(item, lang, country)));
 
-        const dbActorNames = await this.nameRepository.getByIds(nameIds);
+        const dbActorNames = await this.getNames(nameIds);
         const actorIds = uniq(dbActorNames.map(item => item.actorId));
 
 
@@ -54,6 +54,28 @@ export class SaveActor extends UseCase<BuildActorParams, Actor, void> {
         }
 
         return this.createActor(actor, ActorHelper.createActorNames(knownNames, lang, country, actor.id));
+    }
+
+    private async getNames(ids: string[]): Promise<ActorName[]> {
+        const pagesize = 50;
+        const getPage = async (page: number) => {
+            const items = ids.slice(pagesize * page, pagesize);
+            if (items.length === 0) {
+                return [];
+            }
+            return this.nameRepository.getByIds(items);
+        }
+
+        const pages = Math.round(ids.length / pagesize) + 1;
+
+        let currentPage = 0;
+        let list: ActorName[] = [];
+
+        while (pages >= currentPage) {
+            list = list.concat(await getPage(currentPage++));
+        }
+
+        return list;
     }
 
     private async conflictActor(ids: string[], knownData: BuildActorParams): Promise<Actor> {
